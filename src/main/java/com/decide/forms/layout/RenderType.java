@@ -1,0 +1,21 @@
+package com.decide.forms.layout;
+
+public enum RenderType {
+
+	DATEPICKER,
+	MULTISELECT,
+	RADIO,
+	RADIO_VER,
+	RADIO_HOR,
+	CHECK_VER,
+	CHECK_HOR,
+	SINGLESELECT,
+	TEXTAREA,
+	TEXTBOX,
+	INTEGERBOX,
+	DOUBLEBOX,
+	FILEUPLOADER,
+	EMAILBOX,
+	IBANBOX,
+	LINK
+}

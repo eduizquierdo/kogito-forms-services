@@ -1,0 +1,14 @@
+package com.decide.forms.model;
+
+public enum FormStatus {
+    DELETED,
+    DOCS_ERROR,
+    DOCS_VALIDATED,
+    DRAFT,
+    ERROR_SENDING_TASK_CONNECT,
+    FINISHED,
+    PENDING_SEND_DOCS,
+    PENDING_SEND_TASK_CONNECT,
+    PENDING_VALIDATE_DOCS,
+    SENT_TASK_CONNECT
+}
