@@ -18,7 +18,7 @@
   <properties>
     <java.version>17</java.version>
     <kogito.version>1.44.1.Final</kogito.version>
-    <drools.version>1.44.1.Final</drools.version>
+    <drools.version>9.44.0.Final</drools.version>
   </properties>
 
   <dependencyManagement>
@@ -43,7 +43,6 @@
        <artifactId>kogito-decisions-spring-boot-starter</artifactId>
     </dependency>
 
-
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
@@ -59,21 +58,56 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
-
+    
     <dependency>
       <groupId>io.rest-assured</groupId>
       <artifactId>rest-assured</artifactId>
       <scope>test</scope>
     </dependency>
 
+    <!-- decision tables -->
+    <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-drools</artifactId>
+        <version>1.44.1.Final</version>
+    </dependency>
     <dependency>
         <groupId>org.drools</groupId>
         <artifactId>drools-decisiontables</artifactId>
         <version>9.44.0.Final</version>
     </dependency>
+
+    <!-- Optional: DMN related dependency -->
+    <dependency>
+        <groupId>org.kie.kogito</groupId>
+        <artifactId>kogito-dmn</artifactId>
+        <version>${kogito.version}</version>
+    </dependency>
+
+    <!--
+    <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-decisiontables</artifactId>
+        <version>9.44.0.Final</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.drools</groupId>
+        <artifactId>drools-engine-classic</artifactId>
+        <version>9.44.0.Final</version>
+    </dependency>
+    -->
   </dependencies>
 
   <build>
+     <resources>
+        <resource>
+            <directory>src/main/resources</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.kie.kogito</groupId>

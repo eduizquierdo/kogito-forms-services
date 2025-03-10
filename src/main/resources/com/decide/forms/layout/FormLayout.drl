@@ -1,11 +1,11 @@
 package com.decide.forms.layout
-unit Pages;
+unit FormLayoutRules;
 
 import com.decide.forms.layout.*;
 
 rule "create form structure"
     when
-        $layout: /layout
+        $layout: FormLayout() from layout
     then
         $layout.createPage("principal","Principal");
         $layout.createSection("credito","Datos del crédito");

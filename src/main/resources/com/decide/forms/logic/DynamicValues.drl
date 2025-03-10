@@ -1,14 +1,12 @@
 package com.decide.forms.logic
-unit DynamicValues;
-
-global String question;
+unit DynamicValuesRules;
 
 import com.decide.forms.model.*;
 
 rule "log current question"
     when
         $question: CurrentQuestion(isPageQuestion("principal","esCliente")) from question
-        $form: Form(isPageQuestionAnswered("principal", "esCliente",""),getPageQuestionAsBoolean("principal", "esCliente","")) from form
+        $form: Form(isPageQuestionAnswered("principal", "niesCliente",""),getPageQuestionAsBoolean("principal", "esCliente","")) from form
     then
         System.out.println("[RULES] evaluating logic for principal.esCliente");
 end

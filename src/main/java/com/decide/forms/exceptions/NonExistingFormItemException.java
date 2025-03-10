@@ -6,7 +6,7 @@ public class NonExistingFormItemException extends FormException {
 
 	private static final long serialVersionUID = -200305826858233755L;
 	public NonExistingFormItemException(String mensaje, Level severity, String clave) {
-		super(mensaje,severity,clave);
+		super("NonExistingFormItemException: "+mensaje,severity,clave);
 	}
 
 

@@ -112,6 +112,16 @@ public class Page {
 		super();
 	}
 
+	public Page(String code) {
+		super();
+		this.code = code.trim();
+		this.label=null;
+		this.visible = true;
+		this.tooltip = null;
+		this.url = null;
+		this.questions = null;
+	}
+
 	public Page(String code, String label) {
 		super();
 		this.code = code.trim();

@@ -112,6 +112,11 @@ public class ExecutionStatus {
 		}
 	}
 
+	private static final String DEFAULT_MESSAGE_KEY = "KEY";
+	public void addExecutionMessage(ExecutionMessage message) {
+		this.messagesMap.put(DEFAULT_MESSAGE_KEY,message);
+	}
+
 	private String converLeveltoSeverity(Level level) {
 		if(level==Level.SEVERE) return STATUS_ERROR;
 		else if(level==Level.WARNING) return STATUS_WARNING;

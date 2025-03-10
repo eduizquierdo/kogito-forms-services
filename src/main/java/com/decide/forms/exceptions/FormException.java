@@ -17,7 +17,7 @@ public class FormException extends Exception {
 	}
 	
 	public FormException(String mensaje, Level level, String clave) {
-		super(mensaje);
+		super("[****]"+level+"[****]"+mensaje);
 		this.level=level;
 		this.clave=clave;
 	}
