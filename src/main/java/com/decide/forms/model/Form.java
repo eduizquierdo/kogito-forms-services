@@ -3,6 +3,7 @@ package com.decide.forms.model;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -144,11 +145,26 @@ public class Form {
 	 *------------------------------------------------------------------------------------*/
 	@JsonIgnore
 	private ExecutionStatus executionStatus = null;
+	@JsonIgnore
     public ExecutionStatus getExecutionStatus() {
         return executionStatus;
     }
+	@JsonIgnore
     public void setExecutionStatus(ExecutionStatus executionStatus) {
         this.executionStatus = executionStatus;
+    }
+	
+	@JsonIgnore
+	private List<FormCommand> internalCommands = null;
+	@JsonIgnore
+    public List<FormCommand> getCommands() {
+        return internalCommands;
+    }
+    protected void addCommand(FormCommand command) {
+        if(internalCommands==null) {
+			internalCommands = new ArrayList<FormCommand>();
+		}
+		internalCommands.add(command);
     }
 	
 
@@ -190,15 +206,15 @@ public class Form {
 			 * Checks
 			 *-------------------------------------*/
 	
-	public void checkPageQuestion(String pageCode, String questionCode, String ruleName) throws NonExistingFormItemException {
-		Map<String, Object> page = getPage(pageCode, ruleName);
+	public void checkPageQuestion(String pageCode, String questionCode) throws NonExistingFormItemException {
+		Map<String, Object> page = getPage(pageCode);
 		if(!page.containsKey(questionCode)) 
 			throw new NonExistingFormItemException(String.format("Question %s on page %s not found.", questionCode,pageCode), Level.WARNING, getIdReferencePageElement(pageCode, questionCode));
 	}
 	
-	public void checkSectionQuestion(String pageCode, String sectionCode, String questionCode, String ruleName) throws NonExistingFormItemException {
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		Map<String, Object> section = getSection(page, pageCode, sectionCode, ruleName);
+	public void checkSectionQuestion(String pageCode, String sectionCode, String questionCode) throws NonExistingFormItemException {
+		Map<String, Object> page = getPage(pageCode);
+		Map<String, Object> section = getSection(page, pageCode, sectionCode);
 		
 		
 		if(!section.containsKey(questionCode)) 
@@ -209,40 +225,40 @@ public class Form {
 			 * Getters
 			 *-------------------------------------*/
 	
-	public String getPageQuestionAsText(String pageCode, String questionCode, String ruleName ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
+	public String getPageQuestionAsText(String pageCode, String questionCode) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
 		LoggerHelper.log(Level.FINER, () -> String.format("getting response of question %s in form %s as TEXT", questionCode, this.code));
 
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		return getTypedQuestion(page, pageCode, questionCode, ruleName, String.class);
+		Map<String, Object> page = getPage(pageCode);
+		return getTypedQuestion(page, pageCode, questionCode, String.class);
 	}
 
-	public Integer getPageQuestionAsInteger(String pageCode, String questionCode, String ruleName ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
+	public Integer getPageQuestionAsInteger(String pageCode, String questionCode ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
 		LoggerHelper.log(Level.FINER, () -> String.format("getting response of question %s in form %s as INTEGER", questionCode, this.code));
 
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		return getTypedQuestion(page, pageCode, questionCode, ruleName, Integer.class);
+		Map<String, Object> page = getPage(pageCode);
+		return getTypedQuestion(page, pageCode, questionCode, Integer.class);
 	}
 
-	public Double getPageQuestionAsDecimal(String pageCode, String questionCode, String ruleName ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
+	public Double getPageQuestionAsDecimal(String pageCode, String questionCode ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
 		LoggerHelper.log(Level.FINER, () -> String.format("getting response of question %s in form %s as DECIMAL", questionCode, this.code));
 
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		return getTypedQuestion(page, pageCode, questionCode, ruleName, Double.class);
+		Map<String, Object> page = getPage(pageCode);
+		return getTypedQuestion(page, pageCode, questionCode, Double.class);
 	}
 	
-	public Boolean getPageQuestionAsBoolean(String pageCode, String questionCode, String ruleName ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
+	public Boolean getPageQuestionAsBoolean(String pageCode, String questionCode ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
 		LoggerHelper.log(Level.FINER, () -> String.format("getting response of question %s in form %s as BOOLEAN", questionCode, this.code));
 
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		return getTypedQuestion(page, pageCode, questionCode, ruleName, Boolean.class);
+		Map<String, Object> page = getPage(pageCode );
+		return getTypedQuestion(page, pageCode, questionCode , Boolean.class);
 	}
 
-	public Date getPageQuestionAsFormatDate(String pageCode, String questionCode, String dateFormatPattern, String ruleName ) throws NonExistingFormItemException, TypeMismatchException, DateFormatException, NonAnsweredQuestionException {
+	public Date getPageQuestionAsFormatDate(String pageCode, String questionCode, String dateFormatPattern ) throws NonExistingFormItemException, TypeMismatchException, DateFormatException, NonAnsweredQuestionException {
 		LoggerHelper.log(Level.FINER, () -> String.format("getting response of question %s in form %s as DATE", questionCode, this.code));
 
-		Map<String, Object> page = getPage(pageCode, ruleName);
+		Map<String, Object> page = getPage(pageCode);
 
-		String strdate = getTypedQuestion(page, pageCode, questionCode, ruleName, String.class);
+		String strdate = getTypedQuestion(page, pageCode, questionCode, String.class);
 		Date result = null;
 		try {
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormatPattern); 
@@ -251,61 +267,58 @@ public class Form {
 			StringBuilder str = new StringBuilder();
 			str.append("wrong date format in question ").append(questionCode).append(" in ").append(pageCode)
 		       .append(Constant.BLANK).append(Constant.IN_FORM).append(Constant.BLANK).append(this.code).append(". Expected format: ").append(dateFormatPattern);
-			if(ruleName!=null && !ruleName.isEmpty()) {
-				str.append(Constant.DOT_BLANK).append(Constant.ACCESSED_IN_RULE).append(Constant.BLANK).append(ruleName);
-			}
 			throw new DateFormatException(str.toString(),Level.WARNING, getIdReferencePageElement(pageCode, questionCode));
 		}		
 		return result;
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<String> getPageQuestionAsStringList(String pageCode, String questionCode, String ruleName ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
+	public List<String> getPageQuestionAsStringList(String pageCode, String questionCode ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
 		LoggerHelper.log(Level.FINER, () -> String.format("getting response of question %s in form %s as LIST", questionCode, this.code));
 
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		return  getTypedQuestion(page, pageCode, questionCode, ruleName, List.class);
+		Map<String, Object> page = getPage(pageCode);
+		return  getTypedQuestion(page, pageCode, questionCode, List.class);
 	}
 
-	public String getSectionQuestionAsText(String pageCode, String sectionCode, String questionCode, String ruleName ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		Map<String, Object> section = getSection(page, pageCode, sectionCode, ruleName);
-		String response = getTypedQuestion(section, sectionCode, questionCode, ruleName, String.class); 
+	public String getSectionQuestionAsText(String pageCode, String sectionCode, String questionCode ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
+		Map<String, Object> page = getPage(pageCode);
+		Map<String, Object> section = getSection(page, pageCode, sectionCode);
+		String response = getTypedQuestion(section, sectionCode, questionCode, String.class); 
 		LoggerHelper.log(Level.FINER, () -> String.format("getting response of question %s in form %s as TEXT: %s", questionCode, this.code,response));
 		return response;
 	}
 
-	public Integer getSectionQuestionAsInteger(String pageCode, String sectionCode, String questionCode, String ruleName ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
+	public Integer getSectionQuestionAsInteger(String pageCode, String sectionCode, String questionCode ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
 		LoggerHelper.log(Level.FINER, () -> String.format("getting response of question %s in form %s as INTEGER", questionCode, this.code));
 
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		Map<String, Object> section = getSection(page, pageCode, sectionCode, ruleName);
-		return getTypedQuestion(section, sectionCode, questionCode, ruleName, Integer.class);
+		Map<String, Object> page = getPage(pageCode);
+		Map<String, Object> section = getSection(page, pageCode, sectionCode);
+		return getTypedQuestion(section, sectionCode, questionCode, Integer.class);
 	}
 	
-	public Double getSectionQuestionAsDecimal(String pageCode, String sectionCode, String questionCode, String ruleName ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
+	public Double getSectionQuestionAsDecimal(String pageCode, String sectionCode, String questionCode ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
 		LoggerHelper.log(Level.FINER, () -> String.format("getting response of question %s in form %s as DECIMAL", questionCode, this.code));
 
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		Map<String, Object> section = getSection(page, pageCode, sectionCode, ruleName);
-		return getTypedQuestion(section, sectionCode, questionCode, ruleName, Double.class);
+		Map<String, Object> page = getPage(pageCode);
+		Map<String, Object> section = getSection(page, pageCode, sectionCode);
+		return getTypedQuestion(section, sectionCode, questionCode, Double.class);
 	}
 	
-	public Boolean getSectionQuestionAsBoolean(String pageCode, String sectionCode, String questionCode, String ruleName ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
+	public Boolean getSectionQuestionAsBoolean(String pageCode, String sectionCode, String questionCode ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
 		LoggerHelper.log(Level.FINER, () -> String.format("getting response of question %s in form %s as BOOLEAN", questionCode, this.code));
 
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		Map<String, Object> section = getSection(page, pageCode, sectionCode, ruleName);
-		return getTypedQuestion(section, sectionCode, questionCode, ruleName, Boolean.class);
+		Map<String, Object> page = getPage(pageCode);
+		Map<String, Object> section = getSection(page, pageCode, sectionCode);
+		return getTypedQuestion(section, sectionCode, questionCode, Boolean.class);
 	}
 
-	public Date getSectionQuestionAsFormatDate(String pageCode, String sectionCode, String questionCode, String dateFormatPattern, String ruleName ) throws NonExistingFormItemException, TypeMismatchException, DateFormatException, NonAnsweredQuestionException {
+	public Date getSectionQuestionAsFormatDate(String pageCode, String sectionCode, String questionCode, String dateFormatPattern ) throws NonExistingFormItemException, TypeMismatchException, DateFormatException, NonAnsweredQuestionException {
 		LoggerHelper.log(Level.FINER, () -> String.format("getting response of question %s in form %s as DATE", questionCode, this.code));
 
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		Map<String, Object> section = getSection(page, pageCode, sectionCode, ruleName);
+		Map<String, Object> page = getPage(pageCode);
+		Map<String, Object> section = getSection(page, pageCode, sectionCode);
 		
-		String strdate = getTypedQuestion(section, sectionCode,questionCode, ruleName, String.class);
+		String strdate = getTypedQuestion(section, sectionCode,questionCode, String.class);
 		Date result = null;
 		try {
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormatPattern); 
@@ -314,85 +327,128 @@ public class Form {
 			StringBuilder str = new StringBuilder();
 			str.append("wrong date format in question ").append(questionCode).append(" in ").append(pageCode)
 		       .append(Constant.BLANK).append(Constant.IN_FORM).append(Constant.BLANK).append(this.code).append(". Expected format: ").append(dateFormatPattern);
-			if(ruleName!=null && !ruleName.isEmpty()) {
-				str.append(Constant.DOT_BLANK).append(Constant.ACCESSED_IN_RULE).append(Constant.BLANK).append(ruleName);
-			}
 			throw new DateFormatException(str.toString(),Level.WARNING, getIdReferencePageSectionQuestion(pageCode, sectionCode, questionCode));
 		}		
 		return result;
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<String> getSectionQuestionAsStringList(String pageCode, String sectionCode, String questionCode, String ruleName ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
+	public List<String> getSectionQuestionAsStringList(String pageCode, String sectionCode, String questionCode ) throws NonExistingFormItemException, TypeMismatchException, NonAnsweredQuestionException {
 		LoggerHelper.log(Level.FINER, () -> String.format("getting response of question %s in form %s as LIST", questionCode, this.code));
 
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		Map<String, Object> section = getSection(page, pageCode, sectionCode, ruleName);
-		return  getTypedQuestion(section, sectionCode, questionCode, ruleName, List.class);
+		Map<String, Object> page = getPage(pageCode);
+		Map<String, Object> section = getSection(page, pageCode, sectionCode);
+		return  getTypedQuestion(section, sectionCode, questionCode, List.class);
 	}
+
+			/*-------------------------------------*
+			 * Actions
+			 *-------------------------------------*/
 	
+	public void changeDecimalResponsePageQuesiton(String pageCode, String questionCode, Double value) throws NonExistingFormItemException, TypeMismatchException {
+		LoggerHelper.log(Level.FINER, () -> String.format("setting value of %s to %.2f", questionCode, value));
+		FormCommand command = FormCommand.cmdChangeFeature(this,pageCode,questionCode,null,null,FormCommandFeature.RESPONSE,value);
+		if(command!=null) {
+			addCommand(command);
+		}
+	}
+
+	public void changeDecimalResponseSectionQuestion(String pageCode, String sectionCode, String questionCode, Double value) throws NonExistingFormItemException, TypeMismatchException {
+		LoggerHelper.log(Level.FINER, () -> String.format("setting value of %s.%s to %.2f", questionCode, sectionCode, value));
+		FormCommand command = FormCommand.cmdChangeFeatureSection(this,pageCode,sectionCode,questionCode,null,FormCommandFeature.RESPONSE,value);
+		if(command!=null) {
+			addCommand(command);
+		}
+	}
+		
+	public void makeVisiblePageQuestion(String pageCode, String questionCode) throws NonExistingFormItemException {
+		LoggerHelper.log(Level.FINER, () -> String.format("Setting off visbility of %s", questionCode));
+		FormCommand command = FormCommand.cmdChangeFeature(this,pageCode,questionCode,null,null,FormCommandFeature.VISIBLE,true);
+		if(command!=null) {
+			addCommand(command);
+		}
+	}
+
+	public void makeVisibleSectionQuestion(String pageCode, String sectionCode, String questionCode) throws NonExistingFormItemException {
+		LoggerHelper.log(Level.FINER, () -> String.format("Setting off visbility of %s.%s", sectionCode, questionCode));
+		FormCommand command = FormCommand.cmdChangeFeatureSection(this,pageCode,sectionCode,questionCode,null,FormCommandFeature.VISIBLE,true);;
+		if(command!=null) {
+			addCommand(command);
+		}
+	}
+
+	public void makeNotVisiblePageQuestion(String pageCode, String questionCode) throws NonExistingFormItemException {
+		LoggerHelper.log(Level.FINER, () -> String.format("Setting off visbility of %s", questionCode));
+		FormCommand command = FormCommand.cmdChangeFeature(this,pageCode,questionCode,null,null,FormCommandFeature.VISIBLE,false);
+		if(command!=null) {
+			addCommand(command);
+		}
+	}
+
+	public void makeNotVisibleSectionQuestion(String pageCode, String sectionCode, String questionCode) throws NonExistingFormItemException {
+		LoggerHelper.log(Level.FINER, () -> String.format("Setting off visbility of %s.%s", sectionCode, questionCode));
+		FormCommand command = FormCommand.cmdChangeFeatureSection(this,pageCode,sectionCode,questionCode,null,FormCommandFeature.VISIBLE,false);;
+		if(command!=null) {
+			addCommand(command);
+		}
+	}
+
 			/*-------------------------------------*
 			 * Exist
 			 *-------------------------------------*/
 
-	public boolean existPageQuestion(String pageCode, String questionCode, String ruleName) throws NonExistingFormItemException {
-		Map<String, Object> page = getPage(pageCode, ruleName);
+	public boolean existPageQuestion(String pageCode, String questionCode) throws NonExistingFormItemException {
+		Map<String, Object> page = getPage(pageCode);
 		return page.containsKey(questionCode);
 	}
 	
-	public boolean existSection(String pageCode, String sectionCode, String ruleName) throws NonExistingFormItemException {
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		Map<String, Object> section = getSection(page, pageCode, sectionCode, ruleName);
+	public boolean existSection(String pageCode, String sectionCode) throws NonExistingFormItemException {
+		Map<String, Object> page = getPage(pageCode);
+		Map<String, Object> section = getSection(page, pageCode, sectionCode);
 		return section!=null;
 	}
 	
-	public boolean existSectionQuestion(String pageCode, String sectionCode, String questionCode, String ruleName) throws NonExistingFormItemException {
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		Map<String, Object> section = getSection(page, pageCode, sectionCode, ruleName);
+	public boolean existSectionQuestion(String pageCode, String sectionCode, String questionCode) throws NonExistingFormItemException {
+		Map<String, Object> page = getPage(pageCode);
+		Map<String, Object> section = getSection(page, pageCode, sectionCode);
 		return section.containsKey(questionCode);
 	}
 
 			/*-------------------------------------*
 			 * Clean
 			 *-------------------------------------*/
-	public void cleanSection(String pageCode, String sectionCode, String ruleName) throws NonExistingFormItemException {
+	public void cleanSection(String pageCode, String sectionCode) throws NonExistingFormItemException {
 		LoggerHelper.log(Level.FINE, () -> String.format("cleaing section %s of page %s in form %s", sectionCode, pageCode, this.code));
 
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		Map<String, Object> section = getSection(page, pageCode, sectionCode, ruleName);
+		Map<String, Object> page = getPage(pageCode);
+		Map<String, Object> section = getSection(page, pageCode, sectionCode);
 		for(String key: section.keySet()) {
 			section.put(key, null);
 		}
 	}
 
-	public void cleanPageQuestion(String pageCode, String questionCode, String ruleName) throws NonExistingFormItemException {
+	public void cleanPageQuestion(String pageCode, String questionCode) throws NonExistingFormItemException {
 		LoggerHelper.log(Level.FINE, () -> String.format("cleaing question %s of page %s in form %s", questionCode, pageCode, this.code));
 
-		Map<String, Object> page = getPage(pageCode, ruleName);
+		Map<String, Object> page = getPage(pageCode);
 		if(!page.containsKey(questionCode)) {
 			StringBuilder str = new StringBuilder();
 			str.append(Constant.QUESTION).append(Constant.BLANK).append(questionCode).append(" not found in ").append(pageCode).append(Constant.BLANK).append(Constant.IN_FORM).append(Constant.BLANK).append(this.code);
-			if(ruleName!=null && !ruleName.isEmpty()) {
-				str.append(Constant.DOT_BLANK).append(Constant.ACCESSED_IN_RULE).append(Constant.BLANK).append(ruleName);
-			}
 			throw new NonExistingFormItemException(str.toString(),Level.WARNING, getIdReferencePageElement(pageCode, questionCode));
 		} else {
 			page.put(questionCode, null);
 		}
 	}
 
-	public void cleanSectionQuestion(String pageCode, String sectionCode, String questionCode, String ruleName) throws NonExistingFormItemException {
+	public void cleanSectionQuestion(String pageCode, String sectionCode, String questionCode) throws NonExistingFormItemException {
 		LoggerHelper.log(Level.FINE, () -> String.format("cleaing question %s in section %s of page %s in form %s", questionCode, sectionCode, pageCode, this.code));
 
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		Map<String, Object> section = getSection(page, pageCode, sectionCode, ruleName);
+		Map<String, Object> page = getPage(pageCode);
+		Map<String, Object> section = getSection(page, pageCode, sectionCode);
 		if(!section.containsKey(questionCode)) {
 			StringBuilder str = new StringBuilder();
 			str.append(Constant.QUESTION).append(Constant.BLANK).append(questionCode).append(" not found in section ").append(sectionCode)
 			   .append(" of page ").append(pageCode).append(Constant.BLANK).append(Constant.IN_FORM).append(Constant.BLANK).append(this.code);
-			if(ruleName!=null && !ruleName.isEmpty()) {
-				str.append(Constant.DOT_BLANK).append(Constant.ACCESSED_IN_RULE).append(Constant.BLANK).append(ruleName);
-			}
 			throw new NonExistingFormItemException(str.toString(),Level.WARNING, getIdReferencePageSectionQuestion(pageCode, sectionCode, questionCode));
 		} else {
 			section.put(questionCode, null);
@@ -400,24 +456,24 @@ public class Form {
 
 	}
 	
-	public void cleanQuestionGroup(String pageCode, String sectionCode, String groupCode, Integer occurrenceIndex,  String questionCode, String ruleName) throws NonExistingFormItemException {
-		setQuestionGroup(pageCode, sectionCode, groupCode, occurrenceIndex, questionCode, null, ruleName);
+	public void cleanQuestionGroup(String pageCode, String sectionCode, String groupCode, Integer occurrenceIndex,  String questionCode) throws NonExistingFormItemException {
+		setQuestionGroup(pageCode, sectionCode, groupCode, occurrenceIndex, questionCode, null);
 	}
 	
 			/*-------------------------------------*
 			 * Is answered
 			 *-------------------------------------*/
 
-	public boolean isPageQuestionAnswered(String pageCode, String questionCode, String ruleName) throws NonExistingFormItemException {
-		Map<String, Object> page = getPage(pageCode, ruleName);
+	public boolean isPageQuestionAnswered(String pageCode, String questionCode) throws NonExistingFormItemException {
+		Map<String, Object> page = getPage(pageCode);
 		if(!page.containsKey(questionCode)) 
 			throw new NonExistingFormItemException(String.format("Question %s on page %s not found.", questionCode,pageCode), Level.WARNING, getIdReferencePageElement(pageCode, questionCode));
 		return page.get(questionCode)!=null;
 	}
 
-	public boolean isSectionQuestionAnswered(String pageCode, String sectionCode, String questionCode, String ruleName) throws NonExistingFormItemException {
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		Map<String, Object> section = getSection(page, pageCode, sectionCode, ruleName);
+	public boolean isSectionQuestionAnswered(String pageCode, String sectionCode, String questionCode) throws NonExistingFormItemException {
+		Map<String, Object> page = getPage(pageCode);
+		Map<String, Object> section = getSection(page, pageCode, sectionCode);
 		if(!section.containsKey(questionCode)) 
 			throw new NonExistingFormItemException(String.format("Question %s on section %s on page %s not found.", questionCode,sectionCode,pageCode), Level.WARNING, getIdReferencePageSectionQuestion(pageCode, sectionCode, questionCode));
 		return section.get(questionCode)!=null;
@@ -427,10 +483,10 @@ public class Form {
 			 * Setters
 			 *-------------------------------------*/
 	
-	public void setSectionQuestion(String pageCode, String sectionCode, String questionCode, Object value, String ruleName ) throws NonExistingFormItemException {
+	public void setSectionQuestion(String pageCode, String sectionCode, String questionCode, Object value ) throws NonExistingFormItemException {
 		LoggerHelper.log(Level.FINE, () -> String.format("changing response of question %s in section %s of page %s in form %s", questionCode, sectionCode, pageCode, this.code));
-		Map<String, Object> page = getPage(pageCode, ruleName);
-		Map<String, Object> section = getSection(page, pageCode, sectionCode, ruleName);
+		Map<String, Object> page = getPage(pageCode);
+		Map<String, Object> section = getSection(page, pageCode, sectionCode);
 		if(value!=null && !LAZY_DECIMAL_ROUNDING && value instanceof Double) {
 			section.put(questionCode,roundDecimalValue(Double.class.cast(value)));
 		} else {
@@ -438,9 +494,9 @@ public class Form {
 		}
 	}
 	
-	public void setQuestion(String pageCode, String questionCode, Object value, String ruleName ) throws NonExistingFormItemException {
+	public void setQuestion(String pageCode, String questionCode, Object value ) throws NonExistingFormItemException {
 		LoggerHelper.log(Level.FINE, () -> String.format("changing response of question %s of page %s in form %s", questionCode, pageCode, this.code));
-		Map<String, Object> page = getPage(pageCode, ruleName);
+		Map<String, Object> page = getPage(pageCode);
 		if(value!=null && !LAZY_DECIMAL_ROUNDING && value instanceof Double) {
 			page.put(questionCode,roundDecimalValue(Double.class.cast(value)));
 		} else {
@@ -448,40 +504,40 @@ public class Form {
 		}
 	}
 	
-	public void setQuestionGroup(String pageCode, String sectionCode, String groupCode, Integer occurrenceIndex,  String questionCode, Object value, String ruleName) throws NonExistingFormItemException {
+	public void setQuestionGroup(String pageCode, String sectionCode, String groupCode, Integer occurrenceIndex,  String questionCode, Object value) throws NonExistingFormItemException {
 		//LoggerHelper.log(Level.FINE, () -> String.format("cleaing question %s in section %s of page %s in form %s", questionCode, sectionCode, pageCode, this.code));
 		Map<String, Object> element ;
-		Map<String, Object> page = getPage(pageCode, ruleName);
+		Map<String, Object> page = getPage(pageCode);
 		
-		Map<String, Object> section = sectionCode != null ? getSection(page, pageCode, sectionCode, ruleName) : null;
+		Map<String, Object> section = sectionCode != null ? getSection(page, pageCode, sectionCode) : null;
 
 		
-		List<Map<String, Object>> group = getGroup(page, section, pageCode, sectionCode, groupCode, ruleName);
+		List<Map<String, Object>> group = getGroup(page, section, pageCode, sectionCode, groupCode);
 		
-		Map<String, Object> occurrence = group != null && occurrenceIndex != null && occurrenceIndex != -1 ? getOccurrenceGroup(group, pageCode, sectionCode, occurrenceIndex, ruleName) : null;
+		Map<String, Object> occurrence = group != null && occurrenceIndex != null && occurrenceIndex != -1 ? getOccurrenceGroup(group, pageCode, sectionCode, occurrenceIndex) : null;
 		
 		element = occurrence != null ? occurrence : section;
 
-		setValueQuestion(element, pageCode,sectionCode,groupCode,occurrenceIndex, questionCode, value, ruleName);
+		setValueQuestion(element, pageCode,sectionCode,groupCode,occurrenceIndex, questionCode, value);
 
 	}
-	private void setValueQuestion(Map<String, Object> element, String pageCode,String sectionCode,String groupCode, Integer occurrenceIndex, String questionCode, Object value, String ruleName) throws NonExistingFormItemException{
+	private void setValueQuestion(Map<String, Object> element, String pageCode,String sectionCode,String groupCode, Integer occurrenceIndex, String questionCode, Object value) throws NonExistingFormItemException{
 		if(ObjectHelper.isNotNull(element) && !element.containsKey(questionCode)) {
-			generateNonExistingFormItemException(pageCode, sectionCode, groupCode, occurrenceIndex, questionCode, null, ruleName);
+			generateNonExistingFormItemException(pageCode, sectionCode, groupCode, occurrenceIndex, questionCode, null);
 		} else {
 			if(element == null) element = new HashMap<>(); 
 			element.put(questionCode, value);
 		}
 	}
-	private List<Map<String, Object>> getGroup(Map<String, Object> page, Map<String, Object> section, String pageCode,String sectionCode,String groupCode, String ruleName) throws NonExistingFormItemException{
+	private List<Map<String, Object>> getGroup(Map<String, Object> page, Map<String, Object> section, String pageCode,String sectionCode,String groupCode) throws NonExistingFormItemException{
 		List<Map<String, Object>> group = null;
 		if(ObjectHelper.isNotNull(groupCode)) {
 			if(section != null) {
-				group = getGroupMap(section, pageCode, sectionCode, groupCode, ruleName);
+				group = getGroupMap(section, pageCode, sectionCode, groupCode);
 			}else {
-				group = getGroupMap(page, pageCode, sectionCode, groupCode, ruleName);
+				group = getGroupMap(page, pageCode, sectionCode, groupCode);
 			}
-			if(ObjectHelper.isNull(group)) generateNonExistingFormItemException(pageCode, sectionCode, groupCode, null, null, null, ruleName);
+			if(ObjectHelper.isNull(group)) generateNonExistingFormItemException(pageCode, sectionCode, groupCode, null, null, null);
 		}
 		return group;
 	}
@@ -501,7 +557,7 @@ public class Form {
 				} else {
 					button = formLayout.getButton(buttonCode, page);
 				}
-				if(button == null) generateButtonNonExistingFormItemException(buttonCode, null);
+				if(button == null) generateButtonNonExistingFormItemException(buttonCode);
 					
 				switch (feature) {
 				case ENABLED:
@@ -525,7 +581,7 @@ public class Form {
 				Question question = sectionCode!=null ? formLayout.getQuestion(questionCode, formLayout.getSection(sectionCode, page)) : formLayout.getQuestion(questionCode, page);
 				QuestionOption option= formLayout.getOption(optionCode, question);
 
-				if(option == null) generateNonExistingFormItemException(pageCode, sectionCode, null, null, questionCode, optionCode, null);
+				if(option == null) generateNonExistingFormItemException(pageCode, sectionCode, null, null, questionCode, optionCode);
 
 					
 				switch (feature) {
@@ -543,7 +599,7 @@ public class Form {
 			} else if(questionCode!=null) { //Cambiar question
 				Question question = sectionCode!=null ? formLayout.getQuestion(questionCode, formLayout.getSection(sectionCode, page)) : formLayout.getQuestion(questionCode, page);
 				
-				if(question == null) generateNonExistingFormItemException(pageCode, sectionCode, null, null, questionCode, optionCode, null);
+				if(question == null) generateNonExistingFormItemException(pageCode, sectionCode, null, null, questionCode, optionCode);
 				
 				switch (feature) {
 				case EDITABLE:
@@ -574,7 +630,7 @@ public class Form {
 				
 			} else if(sectionCode!=null) { //Cambiar section
 				Section section = formLayout.getSection(sectionCode, page);
-				if(section == null) generateNonExistingFormItemException(pageCode, sectionCode, null, null, questionCode, optionCode, null);
+				if(section == null) generateNonExistingFormItemException(pageCode, sectionCode, null, null, questionCode, optionCode);
 				
 				if(feature == FormCommandFeature.VISIBLE) section.setVisible((Boolean)value);
 				else LoggerHelper.log(Level.WARNING, String.format("Fature %s has been tried to change on section %s", feature, sectionCode ));
@@ -596,7 +652,7 @@ public class Form {
 				button = formLayout.getButton(buttonCode, page);
 			}
 			
-			if(button == null) generateButtonNonExistingFormItemException(buttonCode, null);
+			if(button == null) generateButtonNonExistingFormItemException(buttonCode);
 			
 			switch (feature) {
 			case ENABLED:
@@ -614,7 +670,7 @@ public class Form {
 			Question question = sectionCode!=null ? formLayout.getQuestion(questionCode, formLayout.getSection(sectionCode, page)) : formLayout.getQuestion(questionCode, page);
 			QuestionOption option= formLayout.getOption(optionCode, question);
 			
-			if(option == null) generateNonExistingFormItemException(pageCode, sectionCode, groupCode, null, questionCode, optionCode, null);
+			if(option == null) generateNonExistingFormItemException(pageCode, sectionCode, groupCode, null, questionCode, optionCode);
 
 			switch (feature) {
 			case ENABLED:
@@ -631,7 +687,7 @@ public class Form {
 		} else if(questionCode!=null) { //Cambiar question
 			Question question = sectionCode!=null ? formLayout.getQuestion(questionCode, formLayout.getSection(sectionCode, page)) : formLayout.getQuestion(questionCode, page);
 			
-			if(question == null) generateNonExistingFormItemException(pageCode, sectionCode, null, null, questionCode, optionCode, null);
+			if(question == null) generateNonExistingFormItemException(pageCode, sectionCode, null, null, questionCode, optionCode);
 			
 			switch (feature) {
 			case EDITABLE:
@@ -654,7 +710,7 @@ public class Form {
 		} else if(sectionCode!=null) { //Cambiar section
 			Section section = formLayout.getSection(sectionCode, page);
 			
-			if(section == null) generateNonExistingFormItemException(pageCode, sectionCode, groupCode, null, questionCode, optionCode, null);
+			if(section == null) generateNonExistingFormItemException(pageCode, sectionCode, groupCode, null, questionCode, optionCode);
 			
 			switch (feature) {
 			case VISIBLE:
@@ -946,25 +1002,22 @@ public class Form {
 		}
 	}
 	
-	protected Map<String, Object> getPage(String pageCode, String ruleName) throws NonExistingFormItemException {
+	protected Map<String, Object> getPage(String pageCode) throws NonExistingFormItemException {
 		Map<String, Object> page = getFormContainer(this.formData,pageCode);
-		if(page==null) generateNonExistingFormItemException(pageCode, null, null, null, null, null, ruleName);
+		if(page==null) generateNonExistingFormItemException(pageCode, null, null, null, null, null);
 		return page;
 	}
 
-	protected Map<String, Object> getSection(Map<String, Object> page, String pageCode, String sectionCode, String ruleName) throws NonExistingFormItemException {
+	protected Map<String, Object> getSection(Map<String, Object> page, String pageCode, String sectionCode) throws NonExistingFormItemException {
 		Map<String, Object> section = getFormContainer(page,sectionCode);
-		if(section==null) generateNonExistingFormItemException(pageCode, sectionCode, null, null, null, null, ruleName);
+		if(section==null) generateNonExistingFormItemException(pageCode, sectionCode, null, null, null, null);
 		return section;
 	}
 	
-	protected Object getQuestion(Map<String, Object> container, String containerCode, String questionCode, String ruleName) throws NonExistingFormItemException, NonAnsweredQuestionException {
+	protected Object getQuestion(Map<String, Object> container, String containerCode, String questionCode) throws NonExistingFormItemException, NonAnsweredQuestionException {
 		if(!container.containsKey(questionCode)) {
 			StringBuilder str = new StringBuilder();
 			str.append(Constant.QUESTION).append(Constant.BLANK).append(questionCode).append(" not found in ").append(containerCode).append(Constant.BLANK).append(Constant.IN_FORM).append(Constant.BLANK).append(this.code);
-			if(ruleName!=null && !ruleName.isEmpty()) {
-				str.append(Constant.DOT_BLANK).append(Constant.ACCESSED_IN_RULE).append(Constant.BLANK).append(ruleName);
-			}
 			throw new NonExistingFormItemException(str.toString(),Level.WARNING, getIdReferencePageElement(containerCode, questionCode));
 		}
 		Object question = getFormObject(container,questionCode);
@@ -972,16 +1025,13 @@ public class Form {
 			StringBuilder str = new StringBuilder();
 			str.append(Constant.QUESTION).append(Constant.BLANK).append(questionCode).append(" not answered ")
 			   .append(" in ").append(containerCode).append(" of form ").append(this.code);
-			if(ruleName!=null && !ruleName.isEmpty()) {
-				str.append(Constant.DOT_BLANK).append(Constant.ACCESSED_IN_RULE).append(Constant.BLANK).append(ruleName);
-			}
 			throw new NonAnsweredQuestionException(str.toString(),Level.WARNING, getIdReferencePageElement(containerCode, questionCode));
 		}
 		return question;
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected List<Map<String, Object>> getGroupMap(Map<String, Object> data, String pageCode, String sectionCode, String groupCode, String ruleName) throws NonExistingFormItemException {
+	protected List<Map<String, Object>> getGroupMap(Map<String, Object> data, String pageCode, String sectionCode, String groupCode) throws NonExistingFormItemException {
 		List<Map<String, Object>> group = new ArrayList<>();
 		
 		for (Map.Entry<String, Object> entryPage : data.entrySet()) {
@@ -1003,7 +1053,7 @@ public class Form {
 		return group;
 	}
 	
-	protected Map<String, Object> getOccurrenceGroup(List<Map<String, Object>> group, String pageCode, String groupCode, Integer occurrenceIndex,  String ruleName) throws NonExistingFormItemException {		
+	protected Map<String, Object> getOccurrenceGroup(List<Map<String, Object>> group, String pageCode, String groupCode, Integer occurrenceIndex) throws NonExistingFormItemException {		
 		for(Map<String, Object> o : group) {
 			if(o.containsKey(Form.GROUP_INDEX_KEY)) {
 				if(o.get(Form.GROUP_INDEX_KEY) instanceof Integer && occurrenceIndex.equals( (Integer) o.get(Form.GROUP_INDEX_KEY))){
@@ -1015,8 +1065,8 @@ public class Form {
 		return null;
 	}
 
-	protected <T> T getTypedQuestion(Map<String, Object> container, String containerCode, String questionCode, String ruleName, Class<T> clazz) throws NonExistingFormItemException, NonAnsweredQuestionException, TypeMismatchException {
-		Object objresult = getQuestion(container, containerCode, questionCode, ruleName);
+	protected <T> T getTypedQuestion(Map<String, Object> container, String containerCode, String questionCode, Class<T> clazz) throws NonExistingFormItemException, NonAnsweredQuestionException, TypeMismatchException {
+		Object objresult = getQuestion(container, containerCode, questionCode);
 		T result = safeCast(objresult,clazz);
 		// If no possible down-casting to target type, throw a TypeMismatchException.
 		if(result==null) {
@@ -1024,9 +1074,6 @@ public class Form {
 			str.append("wrong type of question ").append(questionCode).append(" in ").append(containerCode)
 			   .append(Constant.BLANK).append(Constant.IN_FORM).append(Constant.BLANK).append(this.code)
                .append(". Expected type is ").append(clazz.getName());
-			if(ruleName!=null && !ruleName.isEmpty()) {
-				str.append(Constant.DOT_BLANK).append(Constant.ACCESSED_IN_RULE).append(Constant.BLANK).append(ruleName);
-			}
 			throw new TypeMismatchException(str.toString(),Level.WARNING, getIdReferencePageElement(containerCode, questionCode));
 		}
 
@@ -1163,25 +1210,19 @@ public class Form {
 	 * Exceptions
 	 *--------------------------------------------------------------*/
 	
-	public void generateButtonNonExistingFormItemException(String buttonCode, String ruleName) throws NonExistingFormItemException {
+	public void generateButtonNonExistingFormItemException(String buttonCode) throws NonExistingFormItemException {
 		StringBuilder str = new StringBuilder();
 		str.append("Button ").append(buttonCode);
 		str.append(" not found. In form ").append(this.code).append(". ");
 	
-		if(StringHelper.isNotNullAndNotEmpty(ruleName)) {
-			str.append("Accessed in rule ").append(ruleName);
-		}
 		throw new NonExistingFormItemException(str.toString(),Level.WARNING, buttonCode);
 	}
 	
-	public void generateNonExistingFormItemException(String pageCode, String sectionCode, String groupCode, Integer occurrenceIndex, String questionCode, String optionQuestion, String ruleName) throws NonExistingFormItemException {
+	public void generateNonExistingFormItemException(String pageCode, String sectionCode, String groupCode, Integer occurrenceIndex, String questionCode, String optionQuestion) throws NonExistingFormItemException {
 		StringBuilder str = new StringBuilder();
 		str.append(generateMsgReference(optionQuestion, questionCode, groupCode, sectionCode, pageCode));
 		str.append("not found. In form ").append(this.code).append(". ");
 	
-		if(StringHelper.isNotNullAndNotEmpty(ruleName)) {
-			str.append("Accessed in rule ").append(ruleName);
-		}
 		throw new NonExistingFormItemException(str.toString(),Level.WARNING, getIdReferenceElement(pageCode, sectionCode, groupCode, occurrenceIndex, questionCode, optionQuestion));
 	}
 	

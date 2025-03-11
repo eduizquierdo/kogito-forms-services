@@ -3,12 +3,26 @@ unit DynamicValuesRules;
 
 import com.decide.forms.model.*;
 
-rule "log current question"
+rule "es cliente"
     when
         $question: CurrentQuestion(isPageQuestion("principal","esCliente")) from question
-        $form: Form(isPageQuestionAnswered("principal", "niesCliente",""),getPageQuestionAsBoolean("principal", "esCliente","")) from form
+        $form: Form(isPageQuestionAnswered("principal", "esCliente"),
+                    getPageQuestionAsBoolean("principal", "esCliente") == true) from form
     then
-        System.out.println("[RULES] evaluating logic for principal.esCliente");
+        $form.makeVisiblePageQuestion("principal","numCliente");
+        $form.changeDecimalResponseSectionQuestion("principal","credito","interes",1.75);
+        
+end
+
+rule "no es cliente"
+    when
+        $question: CurrentQuestion(isPageQuestion("principal","esCliente")) from question
+        $form: Form(isPageQuestionAnswered("principal", "esCliente"),
+                    getPageQuestionAsBoolean("principal", "esCliente") == false) from form
+    then
+        $form.makeNotVisiblePageQuestion("principal","numCliente");
+        $form.changeDecimalResponseSectionQuestion("principal","credito","interes",2.25);
+        
 end
 
 rule "log"

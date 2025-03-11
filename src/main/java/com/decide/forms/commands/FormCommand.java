@@ -101,18 +101,18 @@ public class FormCommand {
 			/*-------------------------------------*
 			 * With section
 			 *-------------------------------------*/
-	public static FormCommand cmdChangeFeatureSection(Form form, String pageCode, String sectionCode, String questionCode, String optionCode, FormCommandFeature feature, Object value, String ruleName) throws NonExistingFormItemException {
+	public static FormCommand cmdChangeFeatureSection(Form form, String pageCode, String sectionCode, String questionCode, String optionCode, FormCommandFeature feature, Object value) throws NonExistingFormItemException {
 		LoggerHelper.log(Level.FINE, () -> 
 			String.format("changing feature %s of question %s.%s.%s in form %s to value %s",feature, pageCode, sectionCode, questionCode, form.getCode(), value.toString()));
 		
-		String reference = getSectionReference(form, pageCode, sectionCode, questionCode, optionCode, ruleName); 
+		String reference = getSectionReference(form, pageCode, sectionCode, questionCode, optionCode); 
 		
 		if(feature==FormCommandFeature.RESPONSE) {
-			form.setSectionQuestion(pageCode, sectionCode, questionCode,value, ruleName);
+			form.setSectionQuestion(pageCode, sectionCode, questionCode,value);
 		} else if(feature==FormCommandFeature.CLEAN && questionCode!=null) {
-			form.cleanSectionQuestion(pageCode, sectionCode, questionCode,ruleName);
+			form.cleanSectionQuestion(pageCode, sectionCode, questionCode);
 		} else if(feature==FormCommandFeature.CLEAN) {
-			form.cleanSection(pageCode, sectionCode, ruleName);
+			form.cleanSection(pageCode, sectionCode);
 		}
 		
 		form.addCurrentQuestions(reference);
@@ -124,11 +124,11 @@ public class FormCommand {
 			return new FormCommand(reference, feature, value);
 	}
 	
-	public static FormCommand cmdChangeFeatureSectionWithMessage(Form form, String pageCode, String sectionCode, String questionCode, String optionCode, FormCommandFeature feature, Object value, String message, String ruleName) throws NonExistingFormItemException {
+	public static FormCommand cmdChangeFeatureSectionWithMessage(Form form, String pageCode, String sectionCode, String questionCode, String optionCode, FormCommandFeature feature, Object value, String message) throws NonExistingFormItemException {
 		LoggerHelper.log(Level.FINE, () -> 
 			String.format(MSG_LOG_CHANGING_FEATURE_QUESTION, 
 					      feature, questionCode, form.getCode(), value.toString()));
-		FormCommand command =  cmdChangeFeatureSection(form, pageCode, sectionCode, questionCode, optionCode, feature, value, ruleName);
+		FormCommand command =  cmdChangeFeatureSection(form, pageCode, sectionCode, questionCode, optionCode, feature, value);
 		if(command != null && message!=null) {
 			command.setMessage(message);
 		}
@@ -138,16 +138,16 @@ public class FormCommand {
 			 * Without section
 			 *-------------------------------------*/
 		
-	public static FormCommand cmdChangeFeature(Form form, String pageCode, String questionCode, String optionCode, String buttonCode, FormCommandFeature feature, Object value, String ruleName) throws NonExistingFormItemException {
+	public static FormCommand cmdChangeFeature(Form form, String pageCode, String questionCode, String optionCode, String buttonCode, FormCommandFeature feature, Object value) throws NonExistingFormItemException {
 		LoggerHelper.log(Level.FINE, () -> 
 			String.format(MSG_LOG_CHANGING_FEATURE_QUESTION, feature, questionCode, form.getCode(), value.toString()));
 
-		String reference = getReference(form, pageCode, questionCode, optionCode, buttonCode, ruleName);
+		String reference = getReference(form, pageCode, questionCode, optionCode, buttonCode);
 
 		if(feature==FormCommandFeature.RESPONSE) {
-			form.setQuestion(pageCode, questionCode,value, ruleName);
+			form.setQuestion(pageCode, questionCode,value);
 		} else if(feature==FormCommandFeature.CLEAN && questionCode!=null)  {
-			form.cleanPageQuestion(pageCode, questionCode,ruleName);			
+			form.cleanPageQuestion(pageCode, questionCode);			
 		} 
 		
 		form.addCurrentQuestions(reference);
@@ -159,20 +159,20 @@ public class FormCommand {
 			return new FormCommand(reference, feature, value);
 	}
 	
-	public static FormCommand cmdChangeFeatureWithMessage(Form form, String pageCode, String questionCode, String optionCode, String buttonCode, FormCommandFeature feature, Object value, String message, String ruleName) throws NonExistingFormItemException {
+	public static FormCommand cmdChangeFeatureWithMessage(Form form, String pageCode, String questionCode, String optionCode, String buttonCode, FormCommandFeature feature, Object value, String message) throws NonExistingFormItemException {
 		LoggerHelper.log(Level.FINE, () -> 
 			String.format(MSG_LOG_CHANGING_FEATURE_QUESTION, feature, questionCode, form.getCode(), value.toString()));
 
-		FormCommand command =  cmdChangeFeature(form, pageCode, questionCode, optionCode, buttonCode, feature, value, ruleName);
+		FormCommand command =  cmdChangeFeature(form, pageCode, questionCode, optionCode, buttonCode, feature, value);
 		if(command != null && message!=null) {
 			command.setMessage(message);
 		}
 		return command;
 	}
 
-	public static FormCommand cmdChangeFeaturePageButton(Form form, String pageCode, String buttonCode, FormCommandFeature feature, Object value, String ruleName) throws NonExistingFormItemException {
+	public static FormCommand cmdChangeFeaturePageButton(Form form, String pageCode, String buttonCode, FormCommandFeature feature, Object value) throws NonExistingFormItemException {
 		LoggerHelper.log(Level.FINE, () -> 
-			String.format(MSG_LOG_CHANGING_FEATURE_BUTTON, feature, buttonCode, form.getCode(), value.toString(),ruleName ));
+			String.format(MSG_LOG_CHANGING_FEATURE_BUTTON, feature, buttonCode, form.getCode(), value.toString(),"" ));
 
 		String reference = getRefPageButton(pageCode, buttonCode);
 		
@@ -184,9 +184,9 @@ public class FormCommand {
 	}
 	
 
-	public static FormCommand cmdChangeFeaturePageQuestionButton(Form form, String pageCode, String questionCode, String buttonCode, FormCommandFeature feature, Object value, String ruleName) throws NonExistingFormItemException {
+	public static FormCommand cmdChangeFeaturePageQuestionButton(Form form, String pageCode, String questionCode, String buttonCode, FormCommandFeature feature, Object value) throws NonExistingFormItemException {
 		LoggerHelper.log(Level.FINE, () -> 
-			String.format(MSG_LOG_CHANGING_FEATURE_BUTTON, feature, buttonCode, form.getCode(), value.toString(),ruleName));
+			String.format(MSG_LOG_CHANGING_FEATURE_BUTTON, feature, buttonCode, form.getCode(), value.toString(),""));
 
 		String reference = getRefPageButton(pageCode, buttonCode);
 		
@@ -200,7 +200,7 @@ public class FormCommand {
 	/*--------------------------------------------------------------*
 	 * Internal Utilities
 	 *--------------------------------------------------------------*/
-	protected static String getReference(Form form, String pageCode, String questionCode, String optionCode, String buttonCode, String ruleName) throws NonExistingFormItemException {
+	protected static String getReference(Form form, String pageCode, String questionCode, String optionCode, String buttonCode) throws NonExistingFormItemException {
 		String reference = "";
 		
 		if(optionCode != null) {
@@ -211,37 +211,37 @@ public class FormCommand {
 			reference = String.format(StringHelper.generateStringFormatPattern(3), pageCode,REFERENCE_SEPARATOR,questionCode);
 		}
 
-		if(!form.existPageQuestion(pageCode, questionCode, ruleName)) {
-			throw new NonExistingFormItemException(logNonExistingFormItemException(ruleName, form, reference),Level.WARNING, reference);
+		if(!form.existPageQuestion(pageCode, questionCode)) {
+			throw new NonExistingFormItemException(logNonExistingFormItemException(form, reference),Level.WARNING, reference);
 		}
 		
 		return reference;
 	}
 
-	protected static String getSectionReference(Form form, String pageCode, String sectionCode, String questionCode, String optionCode, String ruleName) throws NonExistingFormItemException {
+	protected static String getSectionReference(Form form, String pageCode, String sectionCode, String questionCode, String optionCode) throws NonExistingFormItemException {
 		String reference = "";
 		
 		if(optionCode != null) {
 			reference = String.format(StringHelper.generateStringFormatPattern(7), pageCode,REFERENCE_SEPARATOR,sectionCode,REFERENCE_SEPARATOR,questionCode,REFERENCE_OPTION_SEPARATOR,optionCode);
-			if(!form.existSectionQuestion(pageCode, sectionCode, questionCode, ruleName)) {
-				throw new NonExistingFormItemException(logNonExistingFormItemException(ruleName, form, reference),Level.WARNING,reference);
+			if(!form.existSectionQuestion(pageCode, sectionCode, questionCode)) {
+				throw new NonExistingFormItemException(logNonExistingFormItemException(form, reference),Level.WARNING,reference);
 			}
 		} else if(questionCode != null) {
 			reference = String.format(StringHelper.generateStringFormatPattern(5), pageCode,REFERENCE_SEPARATOR,sectionCode,REFERENCE_SEPARATOR,questionCode);
-			if(!form.existSectionQuestion(pageCode, sectionCode, questionCode, ruleName)) {
-				throw new NonExistingFormItemException(logNonExistingFormItemException(ruleName, form, reference),Level.WARNING,reference);
+			if(!form.existSectionQuestion(pageCode, sectionCode, questionCode)) {
+				throw new NonExistingFormItemException(logNonExistingFormItemException(form, reference),Level.WARNING,reference);
 			}
 		} else {
 			reference = String.format(StringHelper.generateStringFormatPattern(3), pageCode,REFERENCE_SEPARATOR, sectionCode);
-			if(!form.existSection(pageCode, sectionCode, ruleName)) {
-				throw new NonExistingFormItemException(logNonExistingFormItemException(ruleName, form, reference),Level.WARNING,reference);
+			if(!form.existSection(pageCode, sectionCode)) {
+				throw new NonExistingFormItemException(logNonExistingFormItemException(form, reference),Level.WARNING,reference);
 			}
 		}			
 		
 		return reference;
 	}
 	
-	protected static String getReferenceAll(Form form, String pageCode, String sectionCode, String questionCode, String optionCode, String buttonCode, String ruleName) throws NonExistingFormItemException {
+	protected static String getReferenceAll(Form form, String pageCode, String sectionCode, String questionCode, String optionCode, String buttonCode) throws NonExistingFormItemException {
 		
 		StringBuilder reference = new StringBuilder();
 		StringBuilderHelper.addIfNotNullAndSeparator(reference,pageCode,REFERENCE_SEPARATOR);
@@ -252,24 +252,21 @@ public class FormCommand {
 		reference.deleteCharAt(reference.length() - 1);
 		if(questionCode != null) {
 			if(sectionCode != null) {
-				if(!form.existSectionQuestion(pageCode, sectionCode, questionCode, ruleName)) {
-					throw new NonExistingFormItemException(logNonExistingFormItemException(ruleName, form, reference.toString()),Level.WARNING,reference.toString());
+				if(!form.existSectionQuestion(pageCode, sectionCode, questionCode)) {
+					throw new NonExistingFormItemException(logNonExistingFormItemException(form, reference.toString()),Level.WARNING,reference.toString());
 				}	
 			}else{
-				if(!form.existPageQuestion(pageCode, questionCode, ruleName)) {
-					throw new NonExistingFormItemException(logNonExistingFormItemException(ruleName, form, reference.toString()),Level.WARNING, reference.toString());
+				if(!form.existPageQuestion(pageCode, questionCode)) {
+					throw new NonExistingFormItemException(logNonExistingFormItemException( form, reference.toString()),Level.WARNING, reference.toString());
 				}
 			}
 		}
 		return reference.toString();
 	}
 	
-	private static String logNonExistingFormItemException(String ruleName, Form form, String reference) {
+	private static String logNonExistingFormItemException(Form form, String reference) {
 		StringBuilder str = new StringBuilder();
 		str.append("reference ").append(reference).append(" not found in form ").append(form.getCode());
-		if(ruleName!=null && !ruleName.isEmpty()) {
-			str.append(". Accessed in rule ").append(ruleName);
-		}
 		return str.toString();
 	}
 	
@@ -278,7 +275,7 @@ public class FormCommand {
 	}
 	
 	public static FormCommand cmdChangeCallBackQuestion(Form form, String pageCode, String sectionCode, String questionCode, String value) throws NonExistingFormItemException {
-		String reference = getReferenceAll(form, pageCode, sectionCode, questionCode, null, null, null); 
+		String reference = getReferenceAll(form, pageCode, sectionCode, questionCode, null, null); 
 		
 		LoggerHelper.log(Level.FINE, () -> 
 		String.format("changing callback of question %s in form %s to value %s", reference, form.getCode(), value));
@@ -292,7 +289,7 @@ public class FormCommand {
 	}
 	
 	public static FormCommand cmdChangeHelperTextQuestion(Form form, String pageCode, String sectionCode, String questionCode, String value) throws NonExistingFormItemException {
-		String reference = getReferenceAll(form, pageCode, sectionCode, questionCode, null, null, null); 
+		String reference = getReferenceAll(form, pageCode, sectionCode, questionCode, null, null); 
 		
 		LoggerHelper.log(Level.FINE, () -> 
 		String.format("changing Helper text of question %s in form %s to value %s", reference, form.getCode(), value));
@@ -305,7 +302,7 @@ public class FormCommand {
 	}
 	
 	public static FormCommand cmdChangeTooltipQuestion(Form form, String pageCode, String sectionCode, String questionCode, String value) throws NonExistingFormItemException {
-		String reference = getReferenceAll(form, pageCode, sectionCode, questionCode, null, null, null); 
+		String reference = getReferenceAll(form, pageCode, sectionCode, questionCode, null, null); 
 		
 		LoggerHelper.log(Level.FINE, () -> 
 		String.format("changing tooltip of question %s in form %s to value %s", reference, form.getCode(), value));
@@ -318,7 +315,7 @@ public class FormCommand {
 	}
 	
 	public static FormCommand cmdChangeActionButtonPage(Form form, String pageCode, String buttonCode, String value) throws NonExistingFormItemException {
-		String reference = getReferenceAll(form, pageCode, null, null, null, buttonCode, null); 
+		String reference = getReferenceAll(form, pageCode, null, null, null, buttonCode); 
 		
 		LoggerHelper.log(Level.FINE, () -> 
 		String.format("changing action of button %s in form %s to value %s", reference, form.getCode(), value));
@@ -329,7 +326,7 @@ public class FormCommand {
 			return new FormCommand(reference, FormCommandFeature.CHANGE_ACTION, value);
 	}
 	public static FormCommand cmdChangeLabelButtonPage(Form form, String pageCode, String buttonCode, String value) throws NonExistingFormItemException {
-		String reference = getReferenceAll(form, pageCode, null, null, null, buttonCode, null); 
+		String reference = getReferenceAll(form, pageCode, null, null, null, buttonCode); 
 		
 		LoggerHelper.log(Level.FINE, () -> 
 		String.format("changing label of button %s in form %s to value %s", reference, form.getCode(), value));
