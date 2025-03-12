@@ -3,26 +3,37 @@ unit DynamicValuesRules;
 
 import com.decide.forms.model.*;
 
-rule "es cliente"
+rule "calcular interes cliente"
     when
         $question: CurrentQuestion(isPageQuestion("principal","esCliente")) from question
         $form: Form(isPageQuestionAnswered("principal", "esCliente"),
                     getPageQuestionAsBoolean("principal", "esCliente") == true) from form
     then
-        $form.makeVisiblePageQuestion("principal","numCliente");
         $form.changeDecimalResponseSectionQuestion("principal","credito","interes",1.75);
         
 end
 
-rule "no es cliente"
+rule "calcular interes no cliente"
     when
         $question: CurrentQuestion(isPageQuestion("principal","esCliente")) from question
         $form: Form(isPageQuestionAnswered("principal", "esCliente"),
                     getPageQuestionAsBoolean("principal", "esCliente") == false) from form
     then
-        $form.makeNotVisiblePageQuestion("principal","numCliente");
         $form.changeDecimalResponseSectionQuestion("principal","credito","interes",2.25);
         
+end
+
+rule "calcular total"
+    when
+        $question: CurrentQuestion(isPageQuestion("principal","esCliente") || 
+                                   isSectionQuestion("principal","credito","esCliente")) from question
+        $form: Form(isSectionQuestionAnswered("principal", "credito", "importe"),
+                    isPageQuestionAnswered("principal", "esCliente")) from form
+    then
+        $form.changeDecimalResponseSectionQuestion("principal","credito","total",
+            $form.getSectionQuestionAsDecimal("principal","credito","importe")+
+               ($form.getSectionQuestionAsDecimal("principal","credito","importe")*
+                $form.getSectionQuestionAsDecimal("principal","credito","interes")/100.0));
 end
 
 rule "log"

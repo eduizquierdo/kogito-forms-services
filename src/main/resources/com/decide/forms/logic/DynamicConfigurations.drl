@@ -1,0 +1,30 @@
+package com.decide.forms.logic
+unit DynamicConfigurationsRules;
+
+import com.decide.forms.model.*;
+
+rule "es cliente"
+    when
+        $question: CurrentQuestion(isPageQuestion("principal","esCliente")) from question
+        $form: Form(isPageQuestionAnswered("principal", "esCliente"),
+                    getPageQuestionAsBoolean("principal", "esCliente") == true) from form
+    then
+        $form.makeVisiblePageQuestion("principal","numCliente");
+        
+end
+
+rule "no es cliente"
+    when
+        $question: CurrentQuestion(isPageQuestion("principal","esCliente")) from question
+        $form: Form(isPageQuestionAnswered("principal", "esCliente"),
+                    getPageQuestionAsBoolean("principal", "esCliente") == false) from form
+    then
+        $form.makeNotVisiblePageQuestion("principal","numCliente");        
+end
+
+rule "log"
+    when
+        $form: Form() from form
+    then
+        System.out.println("[RULES] applied dynamic configurations for "+$form.getCode());
+end

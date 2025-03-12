@@ -1,0 +1,11 @@
+package com.decide.forms.logic
+unit ValidationsRules;
+
+import com.decide.forms.model.*;
+
+rule "log"
+    when
+        $form: Form() from form
+    then
+        System.out.println("[RULES] form validations done for "+$form.getCode());
+end
