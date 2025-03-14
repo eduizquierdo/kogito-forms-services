@@ -199,49 +199,54 @@ public class FormLayout {
 	 *   Verbalizable BOM actions to populate and configure Form Catalog objects 
 	 *------------------------------------------------------------------------------------*/
 
-	public void createPage(String code, String label) throws NonExistingFormItemException, DuplicatedItemException {
-		if (emptyString(code) || emptyString(label)) {
+	public Page createPage(String code) throws NonExistingFormItemException, DuplicatedItemException {
+		if (emptyString(code)) {
 			reportErrorNullInfo("page");
-			return;
+			return null;
 		}
 
-		LoggerHelper.log(Level.FINE, () -> String.format("Creating page %s-%s", code, label));
+		LoggerHelper.log(Level.FINE, () -> String.format("Creating page %s", code));
 
 		if (this.getCatalogPage(code) != null) {
 			reportWarningDuplicateInfo("page", code);
-			return;
+			return null;
 		}
-
-		this.pageCatalog.put(code, new Page(code, label));
+		Page page = new Page(code);
+		this.pageCatalog.put(code, page);
+		return page;
 	}
 
-	public void createQuestion(String code, String label, DataType dataType, RenderType render)
+	public Question createQuestion(String code)
 			throws NonExistingFormItemException, DuplicatedItemException {
-		if (emptyString(code) || emptyString(label) || render == null) {
+		if (emptyString(code)) {
 			reportErrorNullInfo(QUESTION);
-			return;
+			return null;
 		}
 
-		LoggerHelper.log(Level.FINE, () -> String.format("Creating %s question %s-%s", render, code, label));
+		LoggerHelper.log(Level.FINE, () -> String.format("Creating question %s", code));
 
 		if (this.getCatalogQuestion(code) != null) {
 			reportWarningDuplicateInfo(QUESTION, code);
-			return;
+			return null;
 		}
-		this.questionCatalog.put(code, new Question(code, label, dataType, render));
+		Question result = new Question(code);
+		this.questionCatalog.put(code, result);
+		return result;
 	}
 
-	public void createSection(String code, String label) throws NonExistingFormItemException, DuplicatedItemException {
+	public Section createSection(String code) throws NonExistingFormItemException, DuplicatedItemException {
 		if (emptyString(code)) {
 			reportErrorNullInfo(SECTION);
-			return;
+			return null;
 		}
-		LoggerHelper.log(Level.FINE, () -> String.format("Creating section %s-%s", code, label));
+		LoggerHelper.log(Level.FINE, () -> String.format("Creating section %s", code));
 		if (this.getCatalogSection(code) != null) {
 			reportWarningDuplicateInfo(SECTION, code);
-			return;
+			return null;
 		}
-		this.sectionCatalog.put(code, new Section(code, label));
+		Section result = new Section(code);
+		this.sectionCatalog.put(code, result);
+		return result;
 	}
 
 	public void createGroup(String code, String label, GroupRenderType render)
@@ -354,8 +359,9 @@ public class FormLayout {
 	 *   If the intermediate objects where the question are added (like sections, pages or groups)
 	 *     does not exists yet in the Form, they are created, as a lateral effect.   
 	 *-------------------------------------------------------------------------------------------*/
-	public void addQuestionToStructure(String pageCode, String sectionCode, Integer sectionOrder, String groupCode,
+	public void addQuestionToStructure(Boolean active, String pageCode, String sectionCode, Integer sectionOrder, String groupCode,
 			Integer groupOrder, String questionCode, Integer questionOrder) throws NonExistingFormItemException {
+		if(!active) return;
 		questionCode = checkValidCode(questionCode);
 		sectionCode = checkValidCode(sectionCode);
 		groupCode = checkValidCode(groupCode);

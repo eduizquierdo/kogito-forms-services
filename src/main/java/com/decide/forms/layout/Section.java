@@ -119,10 +119,16 @@ public class Section {
 		setDefaultConfiguration();
 	}
 
-	public Section(String codigo, String label) {
+	public Section(String code) {
 		super();
 		setDefaultConfiguration();
-		this.code = codigo.trim();
+		this.code = code.trim();
+	}
+
+	public Section(String code, String label) {
+		super();
+		setDefaultConfiguration();
+		this.code = code.trim();
 		this.label = label.trim();
 	}
 

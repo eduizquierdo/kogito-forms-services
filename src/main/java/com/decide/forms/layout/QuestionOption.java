@@ -71,6 +71,20 @@ public class QuestionOption {
 	 *--------------------------------------------------------------*/
 	public QuestionOption() {
 		super();
+		this.code = null;
+		this.label = null;
+		this.enabled = false;
+		this.visible = false;
+		this.value=null;
+	}
+
+    public QuestionOption(String code) {
+		super();
+		this.code = code.trim();
+		this.label = null;
+		this.enabled = true;
+		this.visible = true;
+		this.value=null;
 	}
 
 	public QuestionOption(String code, String label, Boolean enabled, Boolean visible) {

@@ -146,10 +146,16 @@ public class Group {
 		this.setDefaultConfiguration();
 	}
 
-	public Group(String codigo, String label, GroupRenderType render) {
+	public Group(String code) {
 		super();
 		this.setDefaultConfiguration();
-		this.code = codigo.trim();
+		this.code = code.trim();
+	}
+
+	public Group(String code, String label, GroupRenderType render) {
+		super();
+		this.setDefaultConfiguration();
+		this.code = code.trim();
 		this.label = label.trim();
 		this.render=render;
 	}

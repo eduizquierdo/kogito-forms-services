@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="__VuIsN5-ED2TH-RTr7z5aQ" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_J63NwOLlED2EEtzhdTFFag" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_layoutItem" structureRef="com.decide.forms.layout.FormLayout"/>
   <bpmn2:itemDefinition id="_formItem" structureRef="com.decide.forms.model.Form"/>
   <bpmn2:itemDefinition id="_errorMessageItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__542347B1-9BD2-4D4D-89CC-855DF34CB5A1_Error-Data-OutputOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__282647E6-38F4-4967-B63D-7230115E6A0B_fileNameInputXItem" structureRef="java.lang.String"/>
   <bpmn2:itemDefinition id="__282647E6-38F4-4967-B63D-7230115E6A0B_namespaceInputXItem" structureRef="java.lang.String"/>
   <bpmn2:itemDefinition id="__282647E6-38F4-4967-B63D-7230115E6A0B_modelInputXItem" structureRef="java.lang.String"/>
   <bpmn2:itemDefinition id="__282647E6-38F4-4967-B63D-7230115E6A0B_decisionInputXItem" structureRef="java.lang.String"/>
   <bpmn2:itemDefinition id="__282647E6-38F4-4967-B63D-7230115E6A0B_layoutInputXItem" structureRef="com.decide.forms.layout.FormLayout"/>
   <bpmn2:itemDefinition id="__282647E6-38F4-4967-B63D-7230115E6A0B_layoutOutputXItem" structureRef="com.decide.forms.layout.FormLayout"/>
-  <bpmn2:itemDefinition id="__542347B1-9BD2-4D4D-89CC-855DF34CB5A1_Error-Data-OutputOutputXItem" structureRef="String"/>
   <bpmn2:error id="com.decide.forms.exceptions.FormException" errorCode="com.decide.forms.exceptions.FormException"/>
-  <bpmn2:collaboration id="_12B5FD0E-0951-4029-93ED-8317604E7BE9" name="Default Collaboration">
-    <bpmn2:participant id="_BD9B47FE-DDB6-4E40-9C0A-42B77072CE63" name="Pool Participant" processRef="formLayoutSp"/>
+  <bpmn2:collaboration id="_745597F9-43A0-4103-9CE4-44C21A20394F" name="Default Collaboration">
+    <bpmn2:participant id="_3B722796-D3B1-4EA9-9123-1D49C06FD0B4" name="Pool Participant" processRef="formLayoutSp"/>
   </bpmn2:collaboration>
   <bpmn2:process id="formLayoutSp" drools:packageName="com.decide.forms" drools:version="1.0" drools:adHoc="false" name="form-layout" isExecutable="true" processType="Public">
     <bpmn2:extensionElements>
@@ -41,7 +41,6 @@
       </bpmn2:extensionElements>
     </bpmn2:property>
     <bpmn2:sequenceFlow id="_E220A85F-85C2-4172-84AD-CB5A42FAD8B8" sourceRef="_C8A67ABB-FD55-4000-BDEB-B9F44512CAD5" targetRef="_9900CACC-6135-4194-B963-B487152D7F05"/>
-    <bpmn2:sequenceFlow id="_1C41E78A-BDB6-4ED2-B226-B401E5C2771C" sourceRef="_542347B1-9BD2-4D4D-89CC-855DF34CB5A1" targetRef="_C8A67ABB-FD55-4000-BDEB-B9F44512CAD5"/>
     <bpmn2:sequenceFlow id="_BF575466-A337-456D-9CC2-B904D77B8D04" sourceRef="_282647E6-38F4-4967-B63D-7230115E6A0B" targetRef="_9900CACC-6135-4194-B963-B487152D7F05"/>
     <bpmn2:sequenceFlow id="_C83CDDCA-4E87-487F-8661-D696D4EB1154" sourceRef="_9900CACC-6135-4194-B963-B487152D7F05" targetRef="_0122F63A-61F2-4464-967E-DE7AF2DBF96B">
       <bpmn2:extensionElements>
@@ -65,6 +64,7 @@
         </drools:metaData>
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_1C41E78A-BDB6-4ED2-B226-B401E5C2771C" sourceRef="_542347B1-9BD2-4D4D-89CC-855DF34CB5A1" targetRef="_C8A67ABB-FD55-4000-BDEB-B9F44512CAD5"/>
     <bpmn2:exclusiveGateway id="_9900CACC-6135-4194-B963-B487152D7F05" gatewayDirection="Converging">
       <bpmn2:incoming>_BF575466-A337-456D-9CC2-B904D77B8D04</bpmn2:incoming>
       <bpmn2:incoming>_E220A85F-85C2-4172-84AD-CB5A42FAD8B8</bpmn2:incoming>
@@ -83,7 +83,7 @@
 }
 </bpmn2:script>
     </bpmn2:scriptTask>
-    <bpmn2:businessRuleTask id="_282647E6-38F4-4967-B63D-7230115E6A0B" drools:ruleFlowGroup="unit:com.decide.forms.layout.FormLayoutRules" name="Create Items" implementation="http://www.jboss.org/drools/rule">
+    <bpmn2:businessRuleTask id="_282647E6-38F4-4967-B63D-7230115E6A0B" drools:ruleFlowGroup="unit:com.decide.forms.layout.Layout" name="Create Items" implementation="http://www.jboss.org/drools/rule">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
           <drools:metaValue><![CDATA[Create Items]]></drools:metaValue>
@@ -118,7 +118,7 @@
       </bpmn2:extensionElements>
       <bpmn2:incoming>_C83CDDCA-4E87-487F-8661-D696D4EB1154</bpmn2:incoming>
       <bpmn2:outgoing>_90E5B0BF-138D-4168-9012-0F221FEEEC0D</bpmn2:outgoing>
-      <bpmn2:script>System.out.println("[FORMS] creating form data for "+form.getCode());
+      <bpmn2:script>System.out.println("[FORMS] created form data for "+form.getCode());
 form.setFormData(layout.createFormData(form));
 </bpmn2:script>
     </bpmn2:scriptTask>
@@ -134,6 +134,8 @@ form.setFormData(layout.createFormData(form));
 com.decide.forms.layout.FormLayout newlayout = new com.decide.forms.layout.FormLayout(code, "ES");
 form.setFormLayout(newlayout);
 kcontext.setVariable("layout",newlayout);
+System.out.println("[FORMS] creating layout structure for "+newlayout.getCode());
+
 
 </bpmn2:script>
     </bpmn2:scriptTask>
@@ -158,6 +160,9 @@ kcontext.setVariable("layout",newlayout);
   </bpmn2:process>
   <bpmndi:BPMNDiagram>
     <bpmndi:BPMNPlane bpmnElement="formLayoutSp">
+      <bpmndi:BPMNShape id="shape__542347B1-9BD2-4D4D-89CC-855DF34CB5A1" bpmnElement="_542347B1-9BD2-4D4D-89CC-855DF34CB5A1">
+        <dc:Bounds height="56" width="56" x="642.7083333333334" y="299.80383710477986"/>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__35A8ADE5-7065-450E-8434-B32B029C0380" bpmnElement="_35A8ADE5-7065-450E-8434-B32B029C0380">
         <dc:Bounds height="56" width="56" x="142" y="249"/>
       </bpmndi:BPMNShape>
@@ -173,15 +178,16 @@ kcontext.setVariable("layout",newlayout);
       <bpmndi:BPMNShape id="shape__282647E6-38F4-4967-B63D-7230115E6A0B" bpmnElement="_282647E6-38F4-4967-B63D-7230115E6A0B">
         <dc:Bounds height="102.00000000000003" width="154" x="559" y="225.80383710477983"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="shape__542347B1-9BD2-4D4D-89CC-855DF34CB5A1" bpmnElement="_542347B1-9BD2-4D4D-89CC-855DF34CB5A1">
-        <dc:Bounds height="56" width="56" x="642.7083333333334" y="299.80383710477986"/>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__C8A67ABB-FD55-4000-BDEB-B9F44512CAD5" bpmnElement="_C8A67ABB-FD55-4000-BDEB-B9F44512CAD5">
         <dc:Bounds height="102" width="154" x="594.2644663298815" y="426.5359032787974"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__9900CACC-6135-4194-B963-B487152D7F05" bpmnElement="_9900CACC-6135-4194-B963-B487152D7F05">
         <dc:Bounds height="56" width="56" x="820" y="330.19211957679653"/>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_shape__542347B1-9BD2-4D4D-89CC-855DF34CB5A1_to_shape__C8A67ABB-FD55-4000-BDEB-B9F44512CAD5" bpmnElement="_1C41E78A-BDB6-4ED2-B226-B401E5C2771C">
+        <di:waypoint x="670.7083333333334" y="327.80383710477986"/>
+        <di:waypoint x="671.2644663298815" y="426.5359032787974"/>
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__35A8ADE5-7065-450E-8434-B32B029C0380_to_shape__9752E3A2-C0B0-4EF0-95E1-D6E9133CAA36" bpmnElement="_167FC7D0-D808-4FD8-B2BC-2FDC94F952E1">
         <di:waypoint x="170" y="277"/>
         <di:waypoint x="322" y="277"/>
@@ -201,10 +207,6 @@ kcontext.setVariable("layout",newlayout);
       <bpmndi:BPMNEdge id="edge_shape__282647E6-38F4-4967-B63D-7230115E6A0B_to_shape__9900CACC-6135-4194-B963-B487152D7F05" bpmnElement="_BF575466-A337-456D-9CC2-B904D77B8D04">
         <di:waypoint x="636" y="276.80383710477986"/>
         <di:waypoint x="820" y="358.19211957679653"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__542347B1-9BD2-4D4D-89CC-855DF34CB5A1_to_shape__C8A67ABB-FD55-4000-BDEB-B9F44512CAD5" bpmnElement="_1C41E78A-BDB6-4ED2-B226-B401E5C2771C">
-        <di:waypoint x="670.7083333333334" y="327.80383710477986"/>
-        <di:waypoint x="671.2644663298815" y="426.5359032787974"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__C8A67ABB-FD55-4000-BDEB-B9F44512CAD5_to_shape__9900CACC-6135-4194-B963-B487152D7F05" bpmnElement="_E220A85F-85C2-4172-84AD-CB5A42FAD8B8">
         <di:waypoint x="671.2644663298815" y="477.5359032787974"/>
@@ -307,7 +309,7 @@ kcontext.setVariable("layout",newlayout);
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>__VuIsN5-ED2TH-RTr7z5aQ</bpmn2:source>
-    <bpmn2:target>__VuIsN5-ED2TH-RTr7z5aQ</bpmn2:target>
+    <bpmn2:source>_J63NwOLlED2EEtzhdTFFag</bpmn2:source>
+    <bpmn2:target>_J63NwOLlED2EEtzhdTFFag</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

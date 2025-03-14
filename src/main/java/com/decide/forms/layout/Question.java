@@ -271,6 +271,42 @@ public class Question {
 	 *--------------------------------------------------------------*/    
 	public Question() {
 		super();
+		this.code = code.trim();
+		this.label = null;
+		this.visible = true;
+		this.editable = (render!=RenderType.LINK);
+		this.dataType=null;
+		this.render = null;
+		this.mandatory = false;
+		this.tooltip = null;
+		this.refresh = false;
+		this.options = new ArrayList<>();
+		this.buttons = new ArrayList<>();
+		this.validated = true;
+		this.newLine = false;
+		this.callback= null;
+		this.extensions = new ArrayList<>();
+		this.valija = false;
+	}
+
+	public Question(String code) {
+		super();
+		this.code = code.trim();
+		this.label = null;
+		this.visible = true;
+		this.editable = (render!=RenderType.LINK);
+		this.dataType=null;
+		this.render = null;
+		this.mandatory = false;
+		this.tooltip = null;
+		this.refresh = false;
+		this.options = new ArrayList<>();
+		this.buttons = new ArrayList<>();
+		this.validated = true;
+		this.newLine = false;
+		this.callback= null;
+		this.extensions = new ArrayList<>();
+		this.valija = false;
 	}
     
     public Question(String code, String label, DataType dataType, RenderType render) {

@@ -1,7 +1,5 @@
 package com.decide.forms.model;
 
-import java.util.logging.Level;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

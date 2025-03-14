@@ -86,6 +86,21 @@ public class Button {
 	 *--------------------------------------------------------------*/    
 	public Button() {
 		super();
+		this.code=null;
+		this.label = null;
+		this.action = null;
+		this.callback= null;
+		this.enabled=true;
+		this.visible=true;
+	}
+	public Button(String code) {
+		super();
+		this.code=code.trim();
+		this.label = null;
+		this.action = null;
+		this.callback= null;
+		this.enabled=true;
+		this.visible=true;
 	}
 	public Button(String code, String label, String action) {
 		super();

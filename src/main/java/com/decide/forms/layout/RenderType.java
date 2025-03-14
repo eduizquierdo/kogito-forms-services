@@ -1,14 +1,10 @@
 package com.decide.forms.layout;
 
 public enum RenderType {
-
 	DATEPICKER,
 	MULTISELECT,
 	RADIO,
-	RADIO_VER,
-	RADIO_HOR,
-	CHECK_VER,
-	CHECK_HOR,
+	CHECKBOX,
 	SINGLESELECT,
 	TEXTAREA,
 	TEXTBOX,
