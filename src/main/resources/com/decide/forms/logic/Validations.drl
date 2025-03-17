@@ -3,9 +3,19 @@ unit ValidationsRules;
 
 import com.decide.forms.model.*;
 
+rule "validar numero cliente"
+    when
+        $question: CurrentQuestion(isPageQuestion("principal","numCliente")) from question
+        $form: Form(isPageQuestionAnswered("principal", "numCliente"),
+                    getPageQuestionAsText("principal","numCliente") != "ABC123") from form
+    then
+        $form.invalidatePageQuestion("principal", "numCliente", "Número de cliente inválido. Debe comenzar por ABC");
+end
+
+
 rule "log"
     when
         $form: Form() from form
     then
-        System.out.println("[RULES] form validations done for "+$form.getCode());
+        System.out.println("[RULES] validations done for "+$form.getCode());
 end

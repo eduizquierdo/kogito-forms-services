@@ -26,7 +26,7 @@ end
 rule "calcular total"
     when
         $question: CurrentQuestion(isPageQuestion("principal","esCliente") || 
-                                   isSectionQuestion("principal","credito","esCliente")) from question
+                                   isSectionQuestion("principal","credito","importe")) from question
         $form: Form(isSectionQuestionAnswered("principal", "credito", "importe"),
                     isPageQuestionAnswered("principal", "esCliente")) from form
     then

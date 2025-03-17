@@ -1,0 +1,21 @@
+package com.decide.forms.logic
+unit FinalValidationsRules;
+
+import com.decide.forms.model.*;
+
+rule "validate total"
+    when
+        $form: Form((isSectionQuestionAnswered("principal", "credito", "total") == false) ||
+                    (getSectionQuestionAsDecimal("principal","credito","total") <= 1000) ||
+                    (getSectionQuestionAsDecimal("principal","credito","total") > 100000)) from form               
+    then
+        $form.invalidateSectionQuestion("principal", "credito", "total", "El total no es valido, debe estar entre 1K y 100K");
+end
+
+
+rule "log"
+    when
+        $form: Form() from form
+    then
+        System.out.println("[RULES] form validations done for "+$form.getCode());
+end

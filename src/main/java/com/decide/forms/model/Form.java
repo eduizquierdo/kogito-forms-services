@@ -464,19 +464,37 @@ public class Form {
 			 * Is answered
 			 *-------------------------------------*/
 
-	public boolean isPageQuestionAnswered(String pageCode, String questionCode) throws NonExistingFormItemException {
-		Map<String, Object> page = getPage(pageCode);
-		if(!page.containsKey(questionCode)) 
-			throw new NonExistingFormItemException(String.format("Question %s on page %s not found.", questionCode,pageCode), Level.WARNING, getIdReferencePageElement(pageCode, questionCode));
-		return page.get(questionCode)!=null;
-	}
+			 public boolean isPageQuestionAnswered(String pageCode, String questionCode) throws NonExistingFormItemException {
+				Map<String, Object> page = getPage(pageCode);
+				if(!page.containsKey(questionCode)) 
+					throw new NonExistingFormItemException(String.format("Question %s on page %s not found.", questionCode,pageCode), Level.WARNING, getIdReferencePageElement(pageCode, questionCode));
+				return page.get(questionCode)!=null;
+			}
+		
+			public boolean isSectionQuestionAnswered(String pageCode, String sectionCode, String questionCode) throws NonExistingFormItemException {
+				Map<String, Object> page = getPage(pageCode);
+				Map<String, Object> section = getSection(page, pageCode, sectionCode);
+				if(!section.containsKey(questionCode)) 
+					throw new NonExistingFormItemException(String.format("Question %s on section %s on page %s not found.", questionCode,sectionCode,pageCode), Level.WARNING, getIdReferencePageSectionQuestion(pageCode, sectionCode, questionCode));
+				return section.get(questionCode)!=null;
+			}
+		
+			/*-------------------------------------*
+			 * Validations
+			 *-------------------------------------*/
 
-	public boolean isSectionQuestionAnswered(String pageCode, String sectionCode, String questionCode) throws NonExistingFormItemException {
-		Map<String, Object> page = getPage(pageCode);
-		Map<String, Object> section = getSection(page, pageCode, sectionCode);
-		if(!section.containsKey(questionCode)) 
-			throw new NonExistingFormItemException(String.format("Question %s on section %s on page %s not found.", questionCode,sectionCode,pageCode), Level.WARNING, getIdReferencePageSectionQuestion(pageCode, sectionCode, questionCode));
-		return section.get(questionCode)!=null;
+	public void invalidatePageQuestion(String pageCode, String questionCode, String message) throws NonExistingFormItemException {
+		FormCommand command = FormCommand.cmdChangeFeatureWithMessage(this, pageCode, questionCode, null, null, FormCommandFeature.VALIDATED, false,  message);
+		if(command!=null) {
+			addCommand(command);
+		}
+	}
+	public void invalidateSectionQuestion(String pageCode, String sectionCode, String questionCode, String message) throws NonExistingFormItemException {
+		FormCommand command = FormCommand.cmdChangeFeatureSectionWithMessage(this, pageCode, sectionCode, questionCode, null, FormCommandFeature.VALIDATED, false,  message);
+		if(command!=null) {
+			addCommand(command);
+		}
+
 	}
 
 			/*-------------------------------------*
